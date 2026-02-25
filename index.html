@@ -28,36 +28,25 @@ html{font-size:14px}
 body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;min-height:100vh;display:flex}
 
 /* SIDEBAR */
-.sb{
-  width:272px;flex-shrink:0;
-  background:var(--bg2);border-right:1px solid var(--border);
-  height:100vh;position:sticky;top:0;
-  display:flex;flex-direction:column;overflow:hidden;
-}
+.sb{width:272px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);height:100vh;position:sticky;top:0;display:flex;flex-direction:column;overflow:hidden}
 .sb-scroll{flex:1;overflow-y:auto;padding:0 0 28px}
 .sb-scroll::-webkit-scrollbar{width:3px}
 .sb-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-.sb-logo{
-  padding:20px 20px 16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;flex-shrink:0;
-}
-.sb-logo-icon{
-  width:32px;height:32px;border-radius:8px;background:var(--acg);
-  display:grid;place-items:center;font-size:16px;flex-shrink:0;
-}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-logo-icon{width:32px;height:32px;border-radius:8px;background:var(--acg);display:grid;place-items:center;font-size:16px;flex-shrink:0}
 .logo-name{font-size:15px;font-weight:700;letter-spacing:-.02em}
 .logo-sub{font-size:10px;color:var(--text2);margin-top:1px}
 
 .sec{padding:16px 18px 0}
 .lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;font-weight:600}
 
-/* Mode */
+/* Tabs */
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:16px}
 .tab{padding:7px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border-radius:7px;color:var(--text2);border:none;background:transparent;font-family:inherit;transition:all .2s}
 .tab.on{background:var(--acg);color:#fff;box-shadow:0 2px 10px rgba(79,142,245,.3)}
 
-/* API panel */
+/* API Panel */
 .api-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
 .api-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;cursor:pointer;transition:background .15s}
 .api-hd:hover{background:var(--surface2)}
@@ -71,16 +60,23 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
 
 .fld{margin-bottom:9px}
 .fld label{display:block;font-size:10px;color:var(--text2);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase}
-.fld input{
-  width:100%;background:#07091a;border:1px solid var(--border);border-radius:7px;
-  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;
-  padding:7px 9px;outline:none;transition:border-color .2s;
-}
+.fld input{width:100%;background:#07091a;border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .2s}
 .fld input:focus{border-color:var(--accent)}
 .fld input::placeholder{color:var(--text3)}
-.guide{font-size:10.5px;color:var(--text2);line-height:1.75;margin:8px 0}
-.guide a{color:var(--accent);text-decoration:none}
-.guide a:hover{text-decoration:underline}
+
+.guide-box{
+  background:rgba(79,142,245,.06);border:1px solid rgba(79,142,245,.15);
+  border-radius:8px;padding:10px 11px;font-size:11px;color:var(--text2);
+  line-height:1.8;margin:8px 0;
+}
+.guide-box a{color:var(--accent);text-decoration:none}
+.guide-box a:hover{text-decoration:underline}
+.guide-box .free-badge{
+  display:inline-block;background:rgba(6,214,160,.15);border:1px solid rgba(6,214,160,.3);
+  color:var(--accent3);border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600;
+  margin-bottom:6px;
+}
+
 .save-btn{width:100%;padding:8px;background:rgba(79,142,245,.14);border:1px solid rgba(79,142,245,.28);border-radius:7px;color:var(--accent);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
 .save-btn:hover{background:rgba(79,142,245,.24)}
 
@@ -111,6 +107,18 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
 .s-btn{padding:7px 0;text-align:center;font-size:11px;font-weight:600;cursor:pointer;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:inherit;transition:all .18s}
 .s-btn:hover{border-color:var(--border2)}
 .s-btn.on{background:rgba(79,142,245,.13);border-color:rgba(79,142,245,.38);color:var(--accent)}
+
+/* Usage counter */
+.usage-bar{
+  margin:0 18px 16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:10px 12px;
+}
+.usage-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.usage-lbl{font-size:10px;color:var(--text2)}
+.usage-cnt{font-size:11px;font-weight:700;color:var(--text)}
+.usage-track{height:4px;background:var(--border2);border-radius:2px;overflow:hidden}
+.usage-fill{height:100%;background:var(--acg);border-radius:2px;transition:width .4s}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
@@ -164,7 +172,7 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
 .db-d{font-size:19px;font-weight:700;color:var(--text);line-height:1}
 .db-m{font-size:9px;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
 .db-y{font-size:9px;color:var(--text3)}
-.db-na{font-size:20px;color:var(--text3)}
+.db-na{font-size:20px;color:var(--text3);line-height:1;padding:4px 0}
 
 /* Pagination */
 .pager{display:flex;justify-content:center;gap:5px;margin-top:24px}
@@ -174,7 +182,7 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
 
 /* Mobile */
 .sb-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:20;width:44px;height:44px;border-radius:11px;background:var(--acg);border:none;color:#fff;font-size:17px;cursor:pointer;box-shadow:0 4px 16px rgba(79,142,245,.4);place-items:center}
-@media(max-width:700px){
+@media(max-width:720px){
   .sb{position:fixed;left:0;top:0;bottom:0;z-index:15;transform:translateX(-100%);transition:transform .28s}
   .sb.open{transform:translateX(0)}
   .main{margin-left:0}
@@ -182,7 +190,6 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
   .content{padding:16px 14px 60px}
   .sb-toggle{display:grid}
 }
-
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
@@ -194,7 +201,7 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
     <div class="sb-logo-icon">🔎</div>
     <div>
       <div class="logo-name">Search Pro</div>
-      <div class="logo-sub">Powered by Brave Search API</div>
+      <div class="logo-sub">Powered by Serper.dev (Google)</div>
     </div>
   </div>
 
@@ -212,18 +219,20 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
       <div class="lbl">API 설정</div>
       <div class="api-panel">
         <div class="api-hd" onclick="toggleApi()">
-          <div class="api-st"><div class="dot" id="api-dot"></div><span id="api-lbl">Brave API 키 필요</span></div>
+          <div class="api-st"><div class="dot" id="api-dot"></div><span id="api-lbl">Serper API 키 필요</span></div>
           <span class="caret" id="api-caret">▾</span>
         </div>
         <div class="api-bd" id="api-bd">
           <div class="fld">
-            <label>Brave Search API Key</label>
-            <input type="password" id="bkey" placeholder="BSA...">
+            <label>Serper.dev API Key</label>
+            <input type="password" id="skey" placeholder="API 키를 붙여넣으세요">
           </div>
-          <div class="guide">
-            🔗 <a href="https://api-dashboard.search.brave.com" target="_blank">api-dashboard.search.brave.com</a><br>
-            가입 → Subscriptions → Free Plan 선택 → API Keys 탭에서 키 생성<br>
-            <span style="color:var(--text3)">월 2,000건 무료 · 사이트 검색 + 일반 검색 모두 지원</span>
+          <div class="guide-box">
+            <div class="free-badge">✓ 완전 무료 · 신용카드 불필요</div><br>
+            1. <a href="https://serper.dev/signup" target="_blank">serper.dev/signup</a> 에서 이메일로 가입<br>
+            2. 대시보드 → <strong>API Key</strong> 복사<br>
+            3. 위에 붙여넣고 저장<br>
+            <span style="color:var(--text3)">가입 즉시 2,500건 무료 제공</span>
           </div>
           <button class="save-btn" onclick="saveCfg()">💾 저장 (브라우저에 보관)</button>
         </div>
@@ -237,14 +246,14 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
           <input class="add-inp" id="new-site" placeholder="예: tistory.com/myblog" onkeydown="if(event.key==='Enter')addSite()">
           <button class="add-btn" onclick="addSite()">+</button>
         </div>
-        <div class="hint">http:// 없이 도메인만 입력 · 여러 사이트 동시 검색 가능</div>
+        <div class="hint">http:// 없이 입력 · 여러 사이트 동시 검색 가능</div>
       </div>
 
       <!-- General panel -->
       <div id="gen-panel" style="display:none">
         <div class="infobox">
-          📰 뉴스 포털·언론사 자동 제외<br>
-          <span style="font-size:10px;opacity:.7">네이버뉴스·다음뉴스·조선·중앙·동아·한겨레·연합·KBS·MBC·SBS·블룸버그·CNN·로이터 등</span>
+          📰 주요 뉴스 언론사 자동 제외<br>
+          <span style="font-size:10px;opacity:.7">네이버뉴스·다음뉴스·조선·중앙·동아·한겨레·연합뉴스·KBS·MBC·SBS·Bloomberg·CNN·Reuters 등</span>
         </div>
       </div>
 
@@ -257,6 +266,16 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
       </div>
 
     </div>
+
+    <!-- Usage counter -->
+    <div class="usage-bar" id="usage-bar" style="display:none">
+      <div class="usage-top">
+        <span class="usage-lbl">이번 세션 사용량</span>
+        <span class="usage-cnt" id="usage-cnt">0 / 2,500</span>
+      </div>
+      <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:0%"></div></div>
+    </div>
+
   </div>
 </nav>
 
@@ -281,7 +300,11 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
     <div class="state" id="welcome">
       <div class="state-ico">✦</div>
       <div class="state-title">검색을 시작해 보세요</div>
-      <div class="state-sub">왼쪽에서 사이트를 추가하거나<br>일반 검색 모드를 선택한 후<br>검색어를 입력하세요</div>
+      <div class="state-sub">
+        Serper.dev API 키를 설정하고<br>
+        사이트를 추가하거나 일반 검색 모드를<br>
+        선택한 후 검색어를 입력하세요
+      </div>
     </div>
     <div id="out"></div>
   </div>
@@ -289,7 +312,7 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
 
 <script>
 /* === STATE === */
-let mode='site', sort='rel';
+let mode='site', sort='rel', usageCount=0;
 
 const NEWS=[
   'news.naver.com','news.daum.net','chosun.com','joongang.co.kr','donga.com',
@@ -303,29 +326,40 @@ const NEWS=[
 /* === STORAGE === */
 function load(){
   try{
-    const c=JSON.parse(localStorage.getItem('sp_cfg')||'{}');
-    if(c.bkey) document.getElementById('bkey').value=c.bkey;
+    const c=JSON.parse(localStorage.getItem('sp3_cfg')||'{}');
+    if(c.skey) document.getElementById('skey').value=c.skey;
     updateDot();
-    const s=JSON.parse(localStorage.getItem('sp_sites')||'[]');
+    const s=JSON.parse(localStorage.getItem('sp3_sites')||'[]');
     s.forEach(x=>addToList(x.url,x.on));
+    usageCount=parseInt(localStorage.getItem('sp3_usage')||'0');
+    updateUsage();
   }catch(e){}
 }
 function saveCfg(){
-  const k=document.getElementById('bkey').value.trim();
-  if(!k){alert('Brave API 키를 입력해 주세요.\n\nhttps://api-dashboard.search.brave.com 에서 무료 발급');return;}
-  localStorage.setItem('sp_cfg',JSON.stringify({bkey:k}));
-  updateDot();closeApi();
+  const k=document.getElementById('skey').value.trim();
+  if(!k){alert('Serper API 키를 입력해 주세요.\n\nhttps://serper.dev/signup 에서 무료 가입 후 API Key 복사');return;}
+  localStorage.setItem('sp3_cfg',JSON.stringify({skey:k}));
+  updateDot(); closeApi();
 }
-function getKey(){try{return JSON.parse(localStorage.getItem('sp_cfg')||'{}').bkey||'';}catch(e){return '';}}
+function getKey(){try{return JSON.parse(localStorage.getItem('sp3_cfg')||'{}').skey||'';}catch(e){return '';}}
 function updateDot(){
   const ok=!!getKey();
   document.getElementById('api-dot').className='dot'+(ok?' ok':'');
-  document.getElementById('api-lbl').textContent=ok?'Brave API 연결됨':'Brave API 키 필요';
+  document.getElementById('api-lbl').textContent=ok?'Serper API 연결됨':'Serper API 키 필요 (무료)';
 }
 function saveSites(){
-  localStorage.setItem('sp_sites',JSON.stringify(
+  localStorage.setItem('sp3_sites',JSON.stringify(
     [...document.querySelectorAll('.site-row')].map(r=>({url:r.dataset.url,on:r.querySelector('.cb').classList.contains('on')}))
   ));
+}
+function updateUsage(){
+  const pct=Math.min(100,(usageCount/2500)*100);
+  document.getElementById('usage-bar').style.display='block';
+  document.getElementById('usage-cnt').textContent=`${usageCount.toLocaleString()} / 2,500`;
+  document.getElementById('usage-fill').style.width=pct+'%';
+  document.getElementById('usage-fill').style.background=
+    pct>85?'linear-gradient(135deg,#f87171,#f59e0b)':
+    pct>60?'linear-gradient(135deg,#fbbf24,#8b5cf6)':'var(--acg)';
 }
 
 /* === SITES === */
@@ -373,7 +407,12 @@ function closeApi(){
 
 /* === DATE === */
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function parseD(s){if(!s)return null;const d=new Date(s);return isNaN(d)?null:d;}
+function parseD(s){
+  if(!s)return null;
+  // Serper returns "Dec 1, 2023" or ISO format
+  const d=new Date(s);
+  return isNaN(d)?null:d;
+}
 function dateBadge(s){
   const d=parseD(s);
   if(!d)return`<div class="dbadge"><div class="db-na">—</div></div>`;
@@ -390,68 +429,108 @@ function relAge(d){
 /* === SEARCH === */
 async function go(page=1){
   const key=getKey();
-  if(!key){setOut(`<div class="err">⚠️ Brave API 키를 먼저 설정해 주세요. 왼쪽 패널을 클릭하세요.</div>`);toggleApi();return;}
+  if(!key){setOut(`<div class="err">⚠️ Serper API 키를 먼저 설정해 주세요.<br><span style="font-size:11px;opacity:.8">왼쪽 패널 클릭 → serper.dev 무료 가입 → 키 복사 → 저장</span></div>`);toggleApi();return;}
 
   const q=document.getElementById('q').value.trim();
   if(!q)return;
 
+  // Build query string
   let query=q;
   if(mode==='site'){
     const sites=checkedSites();
     if(!sites.length){setOut(`<div class="err">⚠️ 검색할 사이트를 하나 이상 체크해 주세요.</div>`);return;}
-    query=sites.length===1?`site:${sites[0]} ${q}`:`(${sites.map(s=>`site:${s}`).join(' OR ')}) ${q}`;
+    if(sites.length===1){
+      query=`site:${sites[0]} ${q}`;
+    } else {
+      // Multiple sites: use OR with site: operators
+      query=`(${sites.map(s=>`site:${s}`).join(' OR ')}) ${q}`;
+    }
   } else {
-    query=`${q} ${NEWS.slice(0,12).map(s=>'-site:'+s).join(' ')}`;
+    // General: exclude news
+    const excl=NEWS.slice(0,15).map(s=>'-site:'+s).join(' ');
+    query=`${q} ${excl}`;
   }
-
-  const params=new URLSearchParams({
-    q:query,count:10,offset:(page-1)*10,
-    search_lang:'ko,en',country:'KR',
-    safesearch:'moderate',text_decorations:0,
-  });
-  if(sort==='new'||sort==='old') params.set('freshness','py');
 
   setOut(`<div class="state"><div class="spin"></div><div class="state-sub">검색 중…</div></div>`);
   document.getElementById('welcome').style.display='none';
   document.getElementById('go-btn').disabled=true;
 
   try{
-    const res=await fetch(`https://api.search.brave.com/res/v1/web/search?${params}`,{
-      headers:{'Accept':'application/json','X-Subscription-Token':key}
+    // Serper API - POST to /search
+    const body={
+      q: query,
+      num: 10,
+      page: page,
+      hl: 'ko',
+      gl: 'kr',
+    };
+
+    // Add date sort via tbs parameter
+    if(sort==='new') body.tbs='sbd:1'; // sort by date
+    
+    const res=await fetch('https://google.serper.dev/search',{
+      method:'POST',
+      headers:{
+        'X-API-KEY': key,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     });
+
     if(!res.ok){
       const e=await res.json().catch(()=>({}));
-      throw new Error(e?.message||e?.error?.message||`HTTP ${res.status}`);
+      throw new Error(e?.message||`HTTP ${res.status} - API 키를 확인해 주세요`);
     }
+
     const data=await res.json();
-    const items=(data.web?.results||[]).map(r=>({
-      title:r.title||'',url:r.url||'',desc:r.description||'',
-      age:r.page_age||r.age||null,parsed:parseD(r.page_age||r.age),
-      domain:(()=>{try{return new URL(r.url).hostname;}catch(e){return r.url;}})(),
+
+    // Count usage
+    usageCount++;
+    localStorage.setItem('sp3_usage', usageCount);
+    updateUsage();
+
+    const rawItems = data.organic || [];
+    const items = rawItems.map(r=>({
+      title: r.title||'',
+      url: r.link||'',
+      desc: r.snippet||'',
+      date: r.date||null,
+      parsed: parseD(r.date),
+      domain:(()=>{try{return new URL(r.link).hostname;}catch(e){return r.link;}})(),
     }));
 
-    if(sort==='new') items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:b.parsed-a.parsed);
-    else if(sort==='old') items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:a.parsed-b.parsed);
+    // Client-side sort
+    if(sort==='new'){
+      items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:b.parsed-a.parsed);
+    } else if(sort==='old'){
+      items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:a.parsed-b.parsed);
+    }
 
-    const total=data.web?.totalCount||items.length;
-    render(items,total,q,page);
+    const total=data.searchInformation?.totalResults
+      ? parseInt(data.searchInformation.totalResults.replace(/,/g,''))
+      : items.length;
+
+    render(items, total, q, page);
+
   }catch(e){
-    setOut(`<div class="err">⚠️ ${esc(e.message)}<br><span style="font-size:11px;opacity:.7">API 키 확인 또는 잠시 후 재시도</span></div>`);
+    setOut(`<div class="err">⚠️ ${esc(e.message)}</div>`);
   }finally{
     document.getElementById('go-btn').disabled=false;
   }
 }
 
 function render(items,total,rawQ,page){
-  // chips
   document.getElementById('chips').style.display='flex';
   document.getElementById('cd-mode').style.background=mode==='site'?'var(--accent)':'var(--accent3)';
   document.getElementById('chip-mode-txt').textContent=mode==='site'?`사이트 검색 (${checkedSites().length}개)`:'일반 검색 · 뉴스 제외';
   document.getElementById('chip-sort-txt').textContent={rel:'관련도순',new:'최신순',old:'오래된순'}[sort];
 
-  if(!items.length){setOut(`<div class="state"><div class="state-ico">🔭</div><div class="state-title">검색 결과 없음</div><div class="state-sub">검색어나 사이트 설정을 확인해 주세요.</div></div>`);return;}
+  if(!items.length){
+    setOut(`<div class="state"><div class="state-ico">🔭</div><div class="state-title">검색 결과 없음</div><div class="state-sub">검색어나 사이트 설정을 확인해 주세요.</div></div>`);
+    return;
+  }
 
-  const disp=total>10000?'10,000+':total.toLocaleString();
+  const disp=total>1000000?'1,000,000+':total.toLocaleString();
   let html=`<div class="rinfo"><div class="rcnt">총 <strong>${disp}</strong>개 결과</div><div class="rq">${esc(rawQ)}</div></div>`;
 
   items.forEach((it,i)=>{
@@ -465,12 +544,13 @@ function render(items,total,rawQ,page){
           <div class="card-title">${esc(it.title)}</div>
           <div class="card-desc">${esc(it.desc)}</div>
         </div>
-        ${dateBadge(it.age)}
+        ${dateBadge(it.date)}
       </div>
     </a>`;
   });
 
-  const maxP=Math.min(10,Math.ceil(Math.min(total,100)/10));
+  // Pagination (Serper supports up to page 100)
+  const maxP=Math.min(10, Math.ceil(Math.min(total,100)/10));
   if(maxP>1){
     html+=`<div class="pager">`;
     if(page>1)html+=`<button class="pg" onclick="go(${page-1})">◀</button>`;
