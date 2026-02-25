@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060810;
+  --bg2:#0b0e1a;
+  --surface:#0f1220;
+  --surface2:#141828;
+  --border:#1c2236;
+  --border2:#252d45;
+  --accent:#4a7cff;
+  --accent2:#7c5cfc;
+  --accent-g:linear-gradient(135deg,#4a7cff,#7c5cfc);
+  --green:#34d399;
+  --red:#f87171;
+  --yellow:#fbbf24;
+  --text:#e4ebff;
+  --text2:#7b8db0;
+  --text3:#2e3a55;
+  --radius:12px;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Pretendard',sans-serif;
+  min-height:100vh;
+}
+
+/* ── SIDEBAR LAYOUT ── */
+.layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:280px;flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  overflow-y:auto;z-index:10;
+  transition:transform .3s;
+}
+.sidebar-logo{
+  padding:28px 24px 20px;
+  border-bottom:1px solid var(--border);
+}
+.logo-mark{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:6px;
+}
+.logo-icon{
+  width:32px;height:32px;
+  background:var(--accent-g);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.logo-name{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.logo-sub{font-size:11px;color:var(--text2)}
+
+.sidebar-section{padding:20px 20px 0}
+.sidebar-section-title{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:12px;font-weight:600;
+}
+
+/* Mode switcher */
+.mode-tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;padding:3px;
+  margin-bottom:20px;
+}
+.mode-tab{
+  padding:7px 0;text-align:center;
+  font-size:12px;font-weight:600;cursor:pointer;
+  border-radius:7px;color:var(--text2);
+  transition:all .2s;border:none;background:transparent;
+  font-family:inherit;
+}
+.mode-tab.active{
+  background:var(--accent-g);
+  color:#fff;
+  box-shadow:0 2px 12px rgba(74,124,255,.3);
+}
+
+/* API config */
+.cfg-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+  padding:10px 14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:9px;
+  margin-bottom:16px;
+  transition:border-color .2s;
+}
+.cfg-toggle:hover{border-color:var(--border2)}
+.cfg-toggle-left{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.cfg-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.cfg-dot.ok{background:var(--green)}
+.cfg-arrow{font-size:10px;color:var(--text2);transition:transform .2s}
+.cfg-arrow.open{transform:rotate(180deg)}
+.cfg-body{display:none;margin-bottom:16px}
+.cfg-body.open{display:block}
+
+.field{margin-bottom:10px}
+.field label{display:block;font-size:10px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.field input{
+  width:100%;background:#090c18;
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-family:inherit;font-size:12px;
+  padding:8px 12px;outline:none;transition:border-color .2s;
+}
+.field input:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--text3)}
+.save-cfg-btn{
+  width:100%;padding:8px;
+  background:rgba(74,124,255,.15);
+  border:1px solid rgba(74,124,255,.3);
+  border-radius:8px;color:var(--accent);
+  font-family:inherit;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.save-cfg-btn:hover{background:rgba(74,124,255,.25)}
+
+/* Site list */
+.sites-list{margin-bottom:12px}
+.site-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 12px;
+  margin-bottom:6px;
+  transition:all .2s;
+}
+.site-chip:hover{border-color:var(--border2)}
+.site-chip-check{
+  width:16px;height:16px;border-radius:4px;
+  border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:all .2s;margin-right:8px;
+}
+.site-chip-check.checked{
+  background:var(--accent-g);border-color:transparent;
+}
+.site-chip-check.checked::after{content:'✓';font-size:9px;color:#fff}
+.site-chip-name{
+  font-size:12px;color:var(--text2);
+  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;
+}
+.site-chip-del{
+  width:18px;height:18px;border-radius:4px;
+  background:transparent;border:none;
+  color:var(--text3);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.site-chip-del:hover{color:var(--red);background:rgba(248,113,113,.1)}
+
+.add-site-row{display:flex;gap:6px;margin-bottom:6px}
+.add-site-input{
+  flex:1;background:#090c18;
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;
+  padding:7px 10px;outline:none;transition:border-color .2s;
+}
+.add-site-input:focus{border-color:var(--accent)}
+.add-site-input::placeholder{color:var(--text3)}
+.add-site-btn{
+  padding:0 12px;
+  background:rgba(74,124,255,.2);
+  border:1px solid rgba(74,124,255,.35);
+  border-radius:8px;color:var(--accent);
+  font-size:16px;cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.add-site-btn:hover{background:rgba(74,124,255,.35)}
+
+.site-hint{font-size:10px;color:var(--text3);margin-bottom:16px}
+
+/* Sort */
+.sort-group{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px}
+.sort-btn{
+  padding:7px 0;text-align:center;
+  font-size:11px;font-weight:600;cursor:pointer;
+  border-radius:8px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);
+  transition:all .2s;font-family:inherit;
+}
+.sort-btn:hover{border-color:var(--border2)}
+.sort-btn.active{
+  background:rgba(74,124,255,.15);
+  border-color:rgba(74,124,255,.4);
+  color:var(--accent);
+}
+
+/* General search exclusion info */
+.excl-box{
+  background:rgba(251,191,36,.05);
+  border:1px solid rgba(251,191,36,.15);
+  border-radius:8px;padding:10px 12px;
+  font-size:11px;color:#a89050;line-height:1.6;
+  margin-bottom:16px;
+}
+
+/* ── MAIN CONTENT ── */
+.main{
+  margin-left:280px;
+  flex:1;
+  display:flex;flex-direction:column;
+}
+
+/* Search header */
+.search-header{
+  position:sticky;top:0;z-index:5;
+  background:rgba(6,8,16,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:20px 32px;
+}
+.search-bar-wrap{display:flex;gap:12px;align-items:center}
+.search-bar{
+  flex:1;display:flex;align-items:center;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:border-color .2s;
+}
+.search-bar:focus-within{border-color:var(--accent)}
+.search-icon{padding:0 14px;color:var(--text2);font-size:16px;flex-shrink:0}
+.search-input{
+  flex:1;background:transparent;border:none;
+  color:var(--text);font-family:inherit;font-size:15px;
+  padding:14px 0;outline:none;
+}
+.search-input::placeholder{color:var(--text3)}
+.search-go-btn{
+  margin:6px;
+  background:var(--accent-g);
+  border:none;border-radius:8px;
+  color:#fff;font-family:inherit;font-size:13px;font-weight:700;
+  padding:0 22px;height:40px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+  box-shadow:0 2px 16px rgba(74,124,255,.35);
+}
+.search-go-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(74,124,255,.45)}
+.search-go-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.search-meta{
+  display:flex;align-items:center;gap:10px;
+  margin-top:12px;flex-wrap:wrap;
+}
+.meta-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;padding:3px 10px;
+  font-size:11px;color:var(--text2);
+}
+.meta-badge .dot{width:6px;height:6px;border-radius:50%}
+.meta-badge.mode-site .dot{background:var(--accent)}
+.meta-badge.mode-general .dot{background:var(--green)}
+
+/* Results area */
+.results-wrap{flex:1;padding:28px 32px}
+
+/* Empty / loading / error */
+.state-box{
+  text-align:center;padding:80px 20px;
+  animation:fadeUp .4s ease both;
+}
+.state-icon{font-size:40px;margin-bottom:16px}
+.state-title{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:8px}
+.state-sub{font-size:13px;color:var(--text3);line-height:1.7}
+.spinner{
+  width:36px;height:36px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  margin:0 auto 16px;
+}
+.error-box{
+  background:rgba(248,113,113,.07);
+  border:1px solid rgba(248,113,113,.2);
+  border-radius:10px;color:#f87171;
+  font-size:13px;padding:14px 18px;
+  margin-bottom:12px;
+  animation:fadeUp .3s ease both;
+}
+
+/* Result info bar */
+.result-info{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;flex-wrap:wrap;gap:8px;
+}
+.result-count{font-size:13px;color:var(--text2)}
+.result-count strong{color:var(--text);font-weight:700}
+.result-query{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--accent);
+  background:rgba(74,124,255,.08);
+  border:1px solid rgba(74,124,255,.2);
+  border-radius:6px;padding:3px 10px;
+  max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* Result cards */
+.result-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px 22px;
+  margin-bottom:10px;
+  text-decoration:none;display:block;
+  transition:all .22s;
+  animation:fadeUp .35s ease both;
+  position:relative;overflow:hidden;
+}
+.result-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:var(--accent-g);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .25s;
+}
+.result-card:hover{
+  background:var(--surface2);
+  border-color:var(--border2);
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+}
+.result-card:hover::before{transform:scaleX(1)}
+
+.card-inner{display:flex;gap:18px;align-items:flex-start}
+.card-body{flex:1;min-width:0}
+.card-domain{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;color:var(--text2);
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;padding:2px 8px;
+  margin-bottom:8px;
+  font-family:'JetBrains Mono',monospace;
+}
+.card-title{
+  font-size:15px;font-weight:600;color:var(--text);
+  line-height:1.45;margin-bottom:6px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  transition:color .2s;
+}
+.result-card:hover .card-title{color:#7faeff}
+.card-snippet{
+  font-size:12.5px;color:var(--text2);line-height:1.7;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.card-snippet b{color:var(--text);font-weight:600}
+
+.card-date{
+  flex-shrink:0;min-width:72px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  text-align:center;
+}
+.card-date-day{font-size:20px;font-weight:700;color:var(--text);line-height:1}
+.card-date-mon{font-size:10px;color:var(--text2);margin-top:3px}
+.card-date-yr{font-size:10px;color:var(--text3)}
+.card-date-na{font-size:22px}
+
+/* Pagination */
+.pagination{
+  display:flex;justify-content:center;gap:6px;
+  margin-top:28px;padding-bottom:28px;
+}
+.page-btn{
+  min-width:36px;height:36px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;color:var(--text2);
+  cursor:pointer;font-size:13px;font-family:inherit;
+  transition:all .2s;
+}
+.page-btn:hover{border-color:var(--border2);color:var(--text)}
+.page-btn.active{
+  background:rgba(74,124,255,.2);
+  border-color:rgba(74,124,255,.5);
+  color:var(--accent);font-weight:700;
+}
+.page-btn:disabled{opacity:.25;cursor:not-allowed}
+
+/* Mobile sidebar toggle */
+.sidebar-toggle{
+  display:none;
+  position:fixed;bottom:24px;right:24px;z-index:20;
+  width:48px;height:48px;border-radius:12px;
+  background:var(--accent-g);border:none;
+  color:#fff;font-size:20px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(74,124,255,.4);
+}
+
+@media(max-width:700px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .search-header{padding:14px 16px}
+  .results-wrap{padding:18px 16px}
+  .sidebar-toggle{display:flex;align-items:center;justify-content:center}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">🔎</div>
+      <span class="logo-name">Search Pro</span>
+    </div>
+    <div class="logo-sub">Google Custom Search</div>
+  </div>
+
+  <div class="sidebar-section">
+    <!-- Mode -->
+    <div class="sidebar-section-title">검색 모드</div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-site" onclick="setMode('site')">사이트 검색</button>
+      <button class="mode-tab" id="tab-general" onclick="setMode('general')">일반 검색</button>
+    </div>
+
+    <!-- API Config -->
+    <div class="sidebar-section-title">API 설정</div>
+    <div class="cfg-toggle" onclick="toggleCfg()">
+      <div class="cfg-toggle-left">
+        <div class="cfg-dot" id="cfg-dot"></div>
+        <span id="cfg-label">API 미설정</span>
+      </div>
+      <span class="cfg-arrow" id="cfg-arrow">▾</span>
+    </div>
+    <div class="cfg-body" id="cfg-body">
+      <div class="field">
+        <label>API Key</label>
+        <input type="password" id="api-key" placeholder="AIza...">
+      </div>
+      <div class="field">
+        <label>검색엔진 ID (cx)</label>
+        <input type="text" id="cx" placeholder="1234567890abc">
+      </div>
+      <button class="save-cfg-btn" onclick="saveCfg()">💾 저장 (브라우저에 보관)</button>
+    </div>
+
+    <!-- Sites (visible only in site mode) -->
+    <div id="sites-section">
+      <div class="sidebar-section-title" style="margin-top:16px">검색할 사이트</div>
+      <div class="sites-list" id="sites-list"></div>
+      <div class="add-site-row">
+        <input class="add-site-input" id="new-site" placeholder="tistory.com/myid" onkeydown="if(event.key==='Enter')addSite()">
+        <button class="add-site-btn" onclick="addSite()">+</button>
+      </div>
+      <div class="site-hint">체크한 사이트만 검색됩니다</div>
+    </div>
+
+    <!-- General mode notice (visible only in general mode) -->
+    <div id="general-section" style="display:none;margin-top:16px">
+      <div class="excl-box">
+        📰 뉴스 사이트는 자동으로 검색에서 제외됩니다.<br>
+        <span style="font-size:10px;opacity:.7">(news.naver.com, chosun.com, joongang.co.kr, yna.co.kr, hankyung.com 등)</span>
+      </div>
+    </div>
+
+    <!-- Sort -->
+    <div class="sidebar-section-title" style="margin-top:4px">정렬</div>
+    <div class="sort-group">
+      <button class="sort-btn active" id="sort-rel" onclick="setSort('relevance')">관련도</button>
+      <button class="sort-btn" id="sort-new" onclick="setSort('date')">최신순</button>
+      <button class="sort-btn" id="sort-old" onclick="setSort('date_asc')">오래된순</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE TOGGLE -->
+<button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="search-header">
+    <div class="search-bar-wrap">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="query" placeholder="검색어를 입력하세요..." onkeydown="if(event.key==='Enter')doSearch(1)">
+      </div>
+      <button class="search-go-btn" id="search-btn" onclick="doSearch(1)">검색</button>
+    </div>
+    <div class="search-meta" id="search-meta" style="display:none">
+      <div class="meta-badge mode-site" id="meta-mode">
+        <div class="dot"></div><span id="meta-mode-text"></span>
+      </div>
+      <div class="meta-badge" id="meta-sort-badge">
+        <span id="meta-sort-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-wrap">
+    <div class="state-box" id="welcome-state">
+      <div class="state-icon">✨</div>
+      <div class="state-title">검색을 시작해 보세요</div>
+      <div class="state-sub">왼쪽 사이드바에서 사이트를 추가하거나<br>일반 검색 모드를 선택하세요</div>
+    </div>
+    <div id="results-area"></div>
+  </div>
+</main>
+
+<script>
+/* ═══════════════════════ STATE ═══════════════════════ */
+let mode = 'site';
+let sortMode = 'relevance';
+let sidebarOpen = false;
+
+const NEWS_EXCLUDES = [
+  'news.naver.com','news.daum.net','chosun.com','joongang.co.kr',
+  'donga.com','hani.co.kr','khan.co.kr','hankyung.com','mk.co.kr',
+  'mt.co.kr','sedaily.com','yna.co.kr','yonhapnews.co.kr','kbs.co.kr/news',
+  'mbc.co.kr/news','sbs.co.kr/news','joins.com','newsis.com','ohmynews.com',
+  'pressian.com','mediaus.co.kr','newstapa.org','huffingtonpost.kr','bbc.com/korean',
+  'reuters.com','apnews.com','bloomberg.com','cnbc.com','foxnews.com','cnn.com',
+  'nytimes.com','washingtonpost.com','theguardian.com','techcrunch.com','wired.com',
+];
+
+/* ═══════════════════════ STORAGE ═══════════════════════ */
+function loadAll() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('sp_cfg') || '{}');
+    if (cfg.apiKey) document.getElementById('api-key').value = cfg.apiKey;
+    if (cfg.cx) document.getElementById('cx').value = cfg.cx;
+    updateCfgStatus();
+
+    const sites = JSON.parse(localStorage.getItem('sp_sites') || '[]');
+    sites.forEach(s => addSiteToList(s.url, s.checked));
+  } catch(e) {}
+}
+
+function saveCfg() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  const cx = document.getElementById('cx').value.trim();
+  if (!apiKey || !cx) { alert('API Key와 검색엔진 ID를 모두 입력해 주세요.\n\n발급 방법:\n1. programmablesearchengine.google.com 에서 검색엔진 생성 (전체 웹 검색 활성화)\n2. console.cloud.google.com 에서 Custom Search API 키 발급'); return; }
+  localStorage.setItem('sp_cfg', JSON.stringify({ apiKey, cx }));
+  updateCfgStatus();
+  closeCfg();
+}
+
+function getCfg() {
+  try { return JSON.parse(localStorage.getItem('sp_cfg') || '{}'); } catch(e) { return {}; }
+}
+
+function saveSites() {
+  const chips = document.querySelectorAll('.site-chip');
+  const list = Array.from(chips).map(c => ({
+    url: c.dataset.url,
+    checked: c.querySelector('.site-chip-check').classList.contains('checked'),
+  }));
+  localStorage.setItem('sp_sites', JSON.stringify(list));
+}
+
+function updateCfgStatus() {
+  const cfg = getCfg();
+  const ok = !!(cfg.apiKey && cfg.cx);
+  const dot = document.getElementById('cfg-dot');
+  const label = document.getElementById('cfg-label');
+  dot.className = 'cfg-dot' + (ok ? ' ok' : '');
+  label.textContent = ok ? 'API 설정 완료' : 'API 미설정 (클릭)';
+}
+
+/* ═══════════════════════ SITES ═══════════════════════ */
+function addSite() {
+  const input = document.getElementById('new-site');
+  let url = input.value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'');
+  if (!url) return;
+  input.value = '';
+  addSiteToList(url, true);
+  saveSites();
+}
+
+function addSiteToList(url, checked=true) {
+  const list = document.getElementById('sites-list');
+  // prevent dup
+  if (document.querySelector(`[data-url="${url}"]`)) return;
+
+  const chip = document.createElement('div');
+  chip.className = 'site-chip';
+  chip.dataset.url = url;
+  chip.innerHTML = `
+    <div class="site-chip-check ${checked ? 'checked' : ''}" onclick="toggleSite(this)"></div>
+    <span class="site-chip-name" title="${url}">${url}</span>
+    <button class="site-chip-del" onclick="removeSite(this)">×</button>
+  `;
+  list.appendChild(chip);
+}
+
+function toggleSite(el) {
+  el.classList.toggle('checked');
+  saveSites();
+}
+
+function removeSite(btn) {
+  btn.closest('.site-chip').remove();
+  saveSites();
+}
+
+function getCheckedSites() {
+  return Array.from(document.querySelectorAll('.site-chip-check.checked'))
+    .map(el => el.closest('.site-chip').dataset.url);
+}
+
+/* ═══════════════════════ MODE & SORT ═══════════════════════ */
+function setMode(m) {
+  mode = m;
+  document.getElementById('tab-site').classList.toggle('active', m === 'site');
+  document.getElementById('tab-general').classList.toggle('active', m === 'general');
+  document.getElementById('sites-section').style.display = m === 'site' ? 'block' : 'none';
+  document.getElementById('general-section').style.display = m === 'general' ? 'block' : 'none';
+}
+
+function setSort(s) {
+  sortMode = s;
+  ['rel','new','old'].forEach(k => document.getElementById('sort-'+k).classList.remove('active'));
+  const map = { relevance:'rel', date:'new', date_asc:'old' };
+  document.getElementById('sort-'+map[s]).classList.add('active');
+}
+
+/* ═══════════════════════ CFG PANEL ═══════════════════════ */
+function toggleCfg() {
+  const body = document.getElementById('cfg-body');
+  const arrow = document.getElementById('cfg-arrow');
+  const open = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+function closeCfg() {
+  document.getElementById('cfg-body').classList.remove('open');
+  document.getElementById('cfg-arrow').classList.remove('open');
+}
+
+/* ═══════════════════════ SIDEBAR MOBILE ═══════════════════════ */
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
+}
+
+/* ═══════════════════════ DATE UTILS ═══════════════════════ */
+function extractDate(item) {
+  let date = null;
+  const pm = item.pagemap;
+  if (pm?.metatags?.[0]) {
+    const mt = pm.metatags[0];
+    date = mt['article:published_time'] || mt['og:article:published_time']
+         || mt['date'] || mt['datePublished'] || mt['pubdate']
+         || mt['dc.date'] || mt['publishdate'];
+  }
+  if (!date && pm?.newsarticle?.[0]?.datepublished) date = pm.newsarticle[0].datepublished;
+  if (!date && pm?.hentry?.[0]?.updated) date = pm.hentry[0].updated;
+  // snippet hint
+  if (!date) {
+    const snip = item.snippet || '';
+    const m = snip.match(/(\d{4})[년\-\.\/]\s*(\d{1,2})[월\-\.\/]\s*(\d{1,2})/);
+    if (m) date = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  }
+  return date || null;
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  const d = new Date(str);
+  return isNaN(d) ? null : d;
+}
+
+function renderDate(str) {
+  const d = parseDate(str);
+  if (!d) return `<div class="card-date"><div class="card-date-na">—</div></div>`;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `<div class="card-date">
+    <div class="card-date-day">${d.getDate()}</div>
+    <div class="card-date-mon">${months[d.getMonth()]}</div>
+    <div class="card-date-yr">${d.getFullYear()}</div>
+  </div>`;
+}
+
+/* ═══════════════════════ SEARCH ═══════════════════════ */
+async function doSearch(page=1) {
+  const cfg = getCfg();
+  if (!cfg.apiKey || !cfg.cx) {
+    showError('API Key와 검색엔진 ID를 설정해 주세요. 왼쪽 사이드바 ⚙️ 클릭');
+    toggleCfg();
+    return;
+  }
+
+  const q = document.getElementById('query').value.trim();
+  if (!q) return;
+
+  // Build query
+  let fullQuery = q;
+
+  if (mode === 'site') {
+    const sites = getCheckedSites();
+    if (sites.length === 0) { showError('검색할 사이트를 하나 이상 체크해 주세요.'); return; }
+    if (sites.length === 1) {
+      fullQuery = `site:${sites[0]} ${q}`;
+    } else {
+      const siteExpr = sites.map(s => `site:${s}`).join(' OR ');
+      fullQuery = `(${siteExpr}) ${q}`;
+    }
+  } else {
+    // General: exclude news sites
+    const excl = NEWS_EXCLUDES.map(s => `-site:${s}`).join(' ');
+    fullQuery = `${q} ${excl}`;
+  }
+
+  const start = (page - 1) * 10 + 1;
+  const params = new URLSearchParams({
+    key: cfg.apiKey, cx: cfg.cx,
+    q: fullQuery, num: 10, start,
+  });
+  if (sortMode === 'date') params.set('sort', 'date');
+
+  // UI
+  document.getElementById('welcome-state').style.display = 'none';
+  document.getElementById('results-area').innerHTML = `
+    <div class="state-box">
+      <div class="spinner"></div>
+      <div class="state-sub">검색 중...</div>
+    </div>`;
+  document.getElementById('search-btn').disabled = true;
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/customsearch/v1?${params}`);
+    const data = await res.json();
+    if (data.error) { showError(`API 오류: ${data.error.message}`); return; }
+
+    const items = (data.items || []).map(item => ({
+      title: item.title,
+      url: item.link,
+      snippet: item.htmlSnippet?.replace(/<[^>]+>/g,'') || item.snippet || '',
+      date: extractDate(item),
+      rawDate: parseDate(extractDate(item)),
+      domain: (() => { try { return new URL(item.link).hostname; } catch(e) { return item.link; } })(),
+    }));
+
+    // Client-side date sort
+    if (sortMode === 'date') {
+      items.sort((a,b) => {
+        if (!a.rawDate && !b.rawDate) return 0;
+        if (!a.rawDate) return 1; if (!b.rawDate) return -1;
+        return b.rawDate - a.rawDate;
+      });
+    } else if (sortMode === 'date_asc') {
+      items.sort((a,b) => {
+        if (!a.rawDate && !b.rawDate) return 0;
+        if (!a.rawDate) return 1; if (!b.rawDate) return -1;
+        return a.rawDate - b.rawDate;
+      });
+    }
+
+    const total = parseInt(data.searchInformation?.totalResults || '0');
+    renderResults(items, total, fullQuery, page, q);
+
+  } catch(e) {
+    showError('네트워크 오류: ' + e.message);
+  } finally {
+    document.getElementById('search-btn').disabled = false;
+  }
+}
+
+function renderResults(items, total, fullQuery, page, rawQ) {
+  // update meta bar
+  const metaEl = document.getElementById('search-meta');
+  metaEl.style.display = 'flex';
+  const modeEl = document.getElementById('meta-mode');
+  modeEl.className = 'meta-badge ' + (mode === 'site' ? 'mode-site' : 'mode-general');
+  document.getElementById('meta-mode-text').textContent = mode === 'site'
+    ? `사이트 검색 (${getCheckedSites().length}개)`
+    : '일반 검색 (뉴스 제외)';
+  document.getElementById('meta-sort-text').textContent = {
+    relevance: '관련도순', date: '최신순', date_asc: '오래된순'
+  }[sortMode];
+
+  const area = document.getElementById('results-area');
+  if (!items.length) {
+    area.innerHTML = `<div class="state-box"><div class="state-icon">🔭</div><div class="state-title">검색 결과 없음</div><div class="state-sub">검색어나 사이트 설정을 확인해 주세요.</div></div>`;
+    return;
+  }
+
+  const displayTotal = total > 100 ? '100+' : total.toLocaleString();
+  let html = `
+    <div class="result-info">
+      <div class="result-count">총 <strong>${displayTotal}</strong>개 결과</div>
+      <div class="result-query">${esc(rawQ)}</div>
+    </div>`;
+
+  items.forEach((item, i) => {
+    html += `
+      <a class="result-card" href="${esc(item.url)}" target="_blank" rel="noopener" style="animation-delay:${i*.04}s">
+        <div class="card-inner">
+          <div class="card-body">
+            <div class="card-domain">🌐 ${esc(item.domain)}</div>
+            <div class="card-title">${esc(item.title)}</div>
+            <div class="card-snippet">${esc(item.snippet)}</div>
+          </div>
+          ${renderDate(item.date)}
+        </div>
+      </a>`;
+  });
+
+  // Pagination
+  const maxPage = Math.min(10, Math.ceil(Math.min(total, 100) / 10));
+  if (maxPage > 1) {
+    html += `<div class="pagination">`;
+    if (page > 1) html += `<button class="page-btn" onclick="doSearch(${page-1})">◀</button>`;
+    for (let p = Math.max(1, page-2); p <= Math.min(maxPage, page+2); p++) {
+      html += `<button class="page-btn${p===page?' active':''}" onclick="doSearch(${p})">${p}</button>`;
+    }
+    if (page < maxPage) html += `<button class="page-btn" onclick="doSearch(${page+1})">▶</button>`;
+    html += `</div>`;
+  }
+
+  area.innerHTML = html;
+}
+
+function showError(msg) {
+  document.getElementById('welcome-state').style.display = 'none';
+  document.getElementById('results-area').innerHTML = `<div class="error-box">⚠️ ${esc(msg)}</div>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════ INIT ═══════════════════════ */
+loadAll();
+</script>
+</body>
+</html>
