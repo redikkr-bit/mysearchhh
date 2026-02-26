@@ -467,8 +467,9 @@ function checkedSites(){return [...document.querySelectorAll('.cb.on')].map(el=>
 /* TYPE / MODE / SORT */
 function setType(t){
   searchType=t;
+  const typeIdMap={web:'web',image:'img',news:'news'};
   ['web','img','news'].forEach(k=>document.getElementById('tt-'+k).classList.remove('on'));
-  document.getElementById('tt-'+t).classList.add('on');
+  document.getElementById('tt-'+typeIdMap[t]).classList.add('on');
   const isImg=(t==='image');
   document.getElementById('mode-wrap').style.display=isImg?'none':'block';
   document.getElementById('sites-panel').style.display=(isImg||mode==='general')?'none':'block';
@@ -558,10 +559,22 @@ async function searchWeb(key,q,page){
     domain:(()=>{try{return new URL(r.link).hostname;}catch(e){return r.link;}})(),
   }));
 
-  if(sort==='new') items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:b.parsed.getTime()-a.parsed.getTime());
-  else if(sort==='old') items.sort((a,b)=>(!a.parsed&&!b.parsed)?0:!a.parsed?1:!b.parsed?-1:a.parsed.getTime()-b.parsed.getTime());
+  if(sort==='new' || sort==='old'){
+    // 날짜 있는 항목만 정렬, 날짜 없는 항목은 원래 순서(구글 관련도) 위치 유지
+    const undatedPos = items.map((it,i)=>!it.parsed?i:-1).filter(i=>i>=0);
+    const dated = items.filter(it=>it.parsed);
+    dated.sort((a,b)=>sort==='new'?b.parsed.getTime()-a.parsed.getTime():a.parsed.getTime()-b.parsed.getTime());
+    const undated = items.filter(it=>!it.parsed);
+    const result=[];
+    let di=0,ui=0;
+    for(let i=0;i<items.length;i++){
+      if(undatedPos.includes(i)) result.push(undated[ui++]);
+      else result.push(dated[di++]);
+    }
+    items.splice(0,items.length,...result);
+  }
 
-  const total=data.searchInformation?.totalResults?parseInt(data.searchInformation.totalResults.replace(/,/g,'')):items.length;
+  const total=data.searchInformation?.totalResults?parseInt(String(data.searchInformation.totalResults).replace(/[^0-9]/g,'')):items.length;
   renderWeb(items,total,q,page);
 }
 
@@ -652,7 +665,7 @@ function openLb(idx){
   document.getElementById('lb-title').textContent=img.title||'이미지';
   const lbImg=document.getElementById('lb-img');
   lbImg.src=img.imageUrl||img.thumbnailUrl;
-  lbImg.onerror=()=>{lbImg.src=img.thumbnailUrl;};
+  lbImg.onerror=()=>{lbImg.onerror=null;lbImg.src=img.thumbnailUrl;};
   const sz=img.width&&img.height?`${img.width} × ${img.height} px`:'알 수 없음';
   const ratio=img.width&&img.height?(img.width/img.height).toFixed(2)+':1':'—';
   const ext=(img.imageUrl||'').split('.').pop().split('?')[0].toUpperCase().slice(0,5)||'—';
