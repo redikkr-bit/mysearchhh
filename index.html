@@ -267,7 +267,7 @@ body{background:var(--bg);color:var(--text);font-family:'Pretendard',sans-serif;
           </div>
           <div class="guide-box">
             <div class="free-badge">✓ 무료 · 신용카드 불필요</div><br>
-            1. <a href="https://serper.dev" target="_blank">serper.dev</a> 이메일 가입<br>
+            1. <a href="https://serper.dev" target="_blank" rel="noopener noreferrer">serper.dev</a> 이메일 가입<br>
             2. 대시보드 → API Key 복사<br>
             <span style="color:var(--text3)">가입 즉시 2,500건 무료</span>
           </div>
@@ -395,9 +395,22 @@ const NEWS_EXCL=[
 ];
 
 /* STORAGE */
+function getStore(){ return sessionStorage; }
+function migrateLegacyCfg(){
+  try{
+    const legacy=JSON.parse(localStorage.getItem('sp7_cfg')||'{}');
+    if(legacy && legacy.skey){
+      const cfg={...legacy};
+      getStore().setItem('sp7_cfg',JSON.stringify(cfg));
+      delete legacy.skey;
+      localStorage.setItem('sp7_cfg',JSON.stringify(legacy));
+    }
+  }catch(e){}
+}
 function load(){
   try{
-    const c=JSON.parse(localStorage.getItem('sp7_cfg')||'{}');
+    migrateLegacyCfg();
+    const c=JSON.parse(getStore().getItem('sp7_cfg')||'{}');
     if(c.skey) document.getElementById('skey').value=c.skey;
     if(c.sort){ sort=c.sort; applySort(); }
     if(c.imgCount){ imgCount=c.imgCount; applyImgCount(); }
@@ -412,12 +425,12 @@ function saveCfg(){
   const k=document.getElementById('skey').value.trim();
   if(!k){alert('Serper API 키를 입력해 주세요.\nhttps://serper.dev 에서 무료 가입');return;}
   const cfg=getCfg(); cfg.skey=k;
-  localStorage.setItem('sp7_cfg',JSON.stringify(cfg));
+  getStore().setItem('sp7_cfg',JSON.stringify(cfg));
   updateKeyUI();
   document.getElementById('key-form').classList.remove('open');
   document.getElementById('api-edit-btn').textContent='변경';
 }
-function getCfg(){try{return JSON.parse(localStorage.getItem('sp7_cfg')||'{}');}catch(e){return {};}}
+function getCfg(){try{return JSON.parse(getStore().getItem('sp7_cfg')||'{}');}catch(e){return {};}}
 function getKey(){return getCfg().skey||'';}
 function updateKeyUI(){
   const k=getKey(),ok=!!k;
@@ -439,7 +452,7 @@ function saveSites(){
     [...document.querySelectorAll('.site-row')].map(r=>({url:r.dataset.url,on:r.querySelector('.cb').classList.contains('on')}))
   ));
 }
-function savePref(){const cfg=getCfg();cfg.sort=sort;cfg.imgCount=imgCount;localStorage.setItem('sp7_cfg',JSON.stringify(cfg));}
+function savePref(){const cfg=getCfg();cfg.sort=sort;cfg.imgCount=imgCount;getStore().setItem('sp7_cfg',JSON.stringify(cfg));}
 function updateUsage(){
   const pct=Math.min(100,(usageCount/2500)*100);
   document.getElementById('usage-bar').style.display='block';
@@ -467,8 +480,9 @@ function checkedSites(){return [...document.querySelectorAll('.cb.on')].map(el=>
 /* TYPE / MODE / SORT */
 function setType(t){
   searchType=t;
-  ['web','img','news'].forEach(k=>document.getElementById('tt-'+k).classList.remove('on'));
-  document.getElementById('tt-'+t).classList.add('on');
+  const tabIds={web:'tt-web',image:'tt-img',news:'tt-news'};
+  Object.values(tabIds).forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById(tabIds[t]).classList.add('on');
   const isImg=(t==='image');
   document.getElementById('mode-wrap').style.display=isImg?'none':'block';
   document.getElementById('sites-panel').style.display=(isImg||mode==='general')?'none':'block';
@@ -596,7 +610,7 @@ function renderWeb(items,total,rawQ,page){
   </div>`;
 
   items.forEach((it,i)=>{
-    html+=`<a class="card" href="${esc(it.url)}" target="_blank" rel="noopener" style="animation-delay:${i*.04}s">
+    html+=`<a class="card" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer" style="animation-delay:${i*.04}s">
       <div class="card-in">
         <div class="card-body">
           <div class="card-top">
@@ -671,8 +685,8 @@ function openLb(idx){
     <div class="lb-section">
       <div class="lb-section-title">링크</div>
       <div class="lb-actions">
-        <a class="lb-btn lb-btn-primary" href="${esc(img.imageUrl||img.thumbnailUrl)}" target="_blank" rel="noopener">🖼 원본 이미지</a>
-        <a class="lb-btn lb-btn-secondary" href="${esc(img.link)}" target="_blank" rel="noopener">🌐 페이지 방문</a>
+        <a class="lb-btn lb-btn-primary" href="${esc(img.imageUrl||img.thumbnailUrl)}" target="_blank" rel="noopener noreferrer">🖼 원본 이미지</a>
+        <a class="lb-btn lb-btn-secondary" href="${esc(img.link)}" target="_blank" rel="noopener noreferrer">🌐 페이지 방문</a>
       </div>
     </div>`;
   document.getElementById('lb-prev').style.display=idx>0?'grid':'none';
