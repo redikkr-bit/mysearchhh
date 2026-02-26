@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search Pro</title>
+<title>huri_yap</title>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -401,6 +401,7 @@ function load(){
     if(c.skey) document.getElementById('skey').value=c.skey;
     if(c.sort){ sort=c.sort; applySort(); }
     if(c.imgCount){ imgCount=c.imgCount; applyImgCount(); }
+    if(c.mode){ mode=c.mode; applyMode(); }
     updateKeyUI();
     const s=JSON.parse(localStorage.getItem('sp7_sites')||'[]');
     s.forEach(x=>addToList(x.url,x.on));
@@ -439,7 +440,7 @@ function saveSites(){
     [...document.querySelectorAll('.site-row')].map(r=>({url:r.dataset.url,on:r.querySelector('.cb').classList.contains('on')}))
   ));
 }
-function savePref(){const cfg=getCfg();cfg.sort=sort;cfg.imgCount=imgCount;localStorage.setItem('sp7_cfg',JSON.stringify(cfg));}
+function savePref(){const cfg=getCfg();cfg.sort=sort;cfg.imgCount=imgCount;cfg.mode=mode;localStorage.setItem('sp7_cfg',JSON.stringify(cfg));}
 function updateUsage(){
   const pct=Math.min(100,(usageCount/2500)*100);
   document.getElementById('usage-bar').style.display='block';
@@ -472,8 +473,10 @@ function setType(t){
   document.getElementById('tt-'+typeIdMap[t]).classList.add('on');
   const isImg=(t==='image');
   document.getElementById('mode-wrap').style.display=isImg?'none':'block';
-  document.getElementById('sites-panel').style.display=(isImg||mode==='general')?'none':'block';
-  document.getElementById('gen-panel').style.display=(isImg||mode==='site')?'none':'block';
+  if(!isImg) applyMode(); else {
+    document.getElementById('sites-panel').style.display='none';
+    document.getElementById('gen-panel').style.display='none';
+  }
   document.getElementById('img-note').style.display=isImg?'block':'none';
   document.getElementById('web-options').style.display=isImg?'none':'block';
   document.getElementById('img-options').style.display=isImg?'block':'none';
@@ -481,12 +484,12 @@ function setType(t){
   document.getElementById('s-ico').textContent=icos[t];
   document.getElementById('q').placeholder={web:'검색어를 입력하세요…',image:'이미지를 검색하세요…',news:'뉴스를 검색하세요…'}[t];
 }
-function setMode(m){
-  mode=m;
-  document.getElementById('t-site').classList.toggle('on',m==='site');
-  document.getElementById('t-gen').classList.toggle('on',m==='general');
-  document.getElementById('sites-panel').style.display=m==='site'?'block':'none';
-  document.getElementById('gen-panel').style.display=m==='general'?'block':'none';
+function setMode(m){mode=m;applyMode();savePref();}
+function applyMode(){
+  document.getElementById('t-site').classList.toggle('on',mode==='site');
+  document.getElementById('t-gen').classList.toggle('on',mode==='general');
+  document.getElementById('sites-panel').style.display=mode==='site'?'block':'none';
+  document.getElementById('gen-panel').style.display=mode==='general'?'block':'none';
 }
 function setSort(s){sort=s;applySort();savePref();}
 function applySort(){['rel','new','old'].forEach(k=>document.getElementById('s-'+k).classList.remove('on'));document.getElementById('s-'+sort).classList.add('on');}
@@ -539,7 +542,10 @@ async function searchWeb(key,q,page){
   if(mode==='site'){
     const sites=checkedSites();
     if(!sites.length){setOut(`<div class="err">⚠️ 검색할 사이트를 하나 이상 체크해 주세요.</div>`);return;}
-    query=sites.length===1?`site:${sites[0]} ${q}`:`(${sites.map(s=>`site:${s}`).join(' OR ')}) ${q}`;
+    // 단일: "site:a.com keyword", 복수: "keyword site:a.com OR keyword site:b.com"
+    query=sites.length===1
+      ?`site:${sites[0]} ${q}`
+      :sites.map(s=>`${q} site:${s}`).join(' OR ');
   } else {
     query=`${q} ${NEWS_EXCL.slice(0,15).map(s=>'-site:'+s).join(' ')}`;
   }
@@ -624,14 +630,15 @@ function renderWeb(items,total,rawQ,page){
     </a>`;
   });
 
-  // 페이지네이션: 10개 고정이므로 페이지 이동 = 다음 10개 요청 (1크레딧)
-  const maxPage=Math.min(10, Math.ceil(Math.min(total,100)/PER_PAGE));
-  if(maxPage>1){
+  // 사이트 검색은 totalResults 부정확 → 결과가 10개이면 다음 페이지 존재 가능성 있음
+  const hasMore = items.length >= PER_PAGE;
+  const maxPage = hasMore ? Math.max(page + 1, Math.min(10, Math.ceil(Math.min(total||0, 100) / PER_PAGE))) : page;
+  if(page > 1 || hasMore){
     html+=`<div class="pager">`;
-    if(page>1) html+=`<button class="pg" onclick="go(${page-1})">◀</button>`;
+    if(page>1) html+=`<button class="pg" onclick="go(${page-1})">◀ 이전</button>`;
     for(let p=Math.max(1,page-2);p<=Math.min(maxPage,page+2);p++)
       html+=`<button class="pg${p===page?' on':''}" onclick="go(${p})">${p}</button>`;
-    if(page<maxPage) html+=`<button class="pg" onclick="go(${page+1})">▶</button>`;
+    if(hasMore) html+=`<button class="pg" onclick="go(${page+1})">다음 ▶</button>`;
     html+=`<span class="pg-info">(페이지당 1크레딧)</span></div>`;
   }
   setOut(html);
